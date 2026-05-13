@@ -1,12 +1,515 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Адмінка</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Адмінка залишків</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#fbf7ff;
+  color:#21172d
+}
+
+.wrap{
+  max-width:980px;
+  margin:auto;
+  padding:12px
+}
+
+.hero,.panel,.card{
+  background:#fff;
+  border:1px solid #ead7fb;
+  border-radius:18px;
+  box-shadow:0 8px 20px rgba(70,20,120,.06)
+}
+
+.hero{
+  text-align:center;
+  padding:18px;
+  margin-bottom:12px
+}
+
+h1{
+  margin:0;
+  color:#7b2cbf;
+  font-size:28px
+}
+
+.sub,.meta,.label{
+  color:#6b6175;
+  font-size:13px
+}
+
+.panel{
+  padding:12px;
+  margin-bottom:12px
+}
+
+.row{
+  display:flex;
+  gap:10px
+}
+
+input{
+  width:100%;
+  border:1px solid #ead7fb;
+  border-radius:14px;
+  padding:12px;
+  font-size:16px
+}
+
+button{
+  border:0;
+  border-radius:14px;
+  padding:12px 14px;
+  font-weight:900;
+  font-size:15px;
+  cursor:pointer
+}
+
+.primary{
+  background:#7b2cbf;
+  color:#fff
+}
+
+.green{
+  background:#19a463;
+  color:#fff
+}
+
+.soft{
+  background:#f3e8ff;
+  color:#4b1d73
+}
+
+.grid{
+  display:flex;
+  flex-direction:column;
+  gap:10px
+}
+
+.card{
+  padding:12px
+}
+
+.top{
+  display:grid;
+  grid-template-columns:72px 1fr auto;
+  gap:12px;
+  align-items:center
+}
+
+.img{
+  width:72px;
+  height:72px;
+  border-radius:14px;
+  background:#fbf9ff;
+  border:1px solid #f1e7fb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  font-size:28px
+}
+
+.img img{
+  max-width:70px;
+  max-height:70px;
+  object-fit:contain
+}
+
+.name{
+  font-weight:900;
+  font-size:16px
+}
+
+.stock{
+  font-size:22px;
+  font-weight:900;
+  color:#7b2cbf;
+  text-align:right
+}
+
+.quick{
+  display:flex;
+  gap:8px;
+  margin-top:10px
+}
+
+.quick button{
+  flex:1
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px
+}
+
+.box{
+  background:#faf7ff;
+  border:1px solid #ead7fb;
+  border-radius:16px;
+  padding:10px
+}
+
+.line{
+  display:flex;
+  gap:8px
+}
+
+.err{
+  display:none;
+  background:#fff1f0;
+  color:#d93025;
+  border:1px solid #ffd1cc;
+  border-radius:14px;
+  margin-bottom:12px;
+  padding:12px
+}
+
+.ok{
+  display:none;
+  background:#effaf4;
+  color:#157347;
+  border:1px solid #c9f0d8;
+  border-radius:14px;
+  margin-bottom:12px;
+  padding:12px
+}
+
+.loader{
+  padding:18px;
+  text-align:center;
+  color:#6b6175
+}
+
+@media(max-width:640px){
+  .wrap{padding:10px}
+  .row{flex-direction:column}
+  .actions{grid-template-columns:1fr}
+  .top{grid-template-columns:64px 1fr auto}
+  .img{width:64px;height:64px}
+  .stock{font-size:20px}
+}
+</style>
 </head>
-<body style="font-family: Arial; padding: 30px;">
-  <h1>Адмінка працює ✅</h1>
-  <p>Якщо ти бачиш цю сторінку, значить admin.html завантажений правильно.</p>
+
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>Адмінка залишків</h1>
+    <div class="sub">Поповнення, корекція та швидке редагування складу</div>
+  </div>
+
+  <div class="panel" id="loginPanel">
+    <div class="row">
+      <input id="pinInput" type="password" placeholder="Введи PIN-код">
+      <button class="primary" onclick="login()">Увійти</button>
+    </div>
+  </div>
+
+  <div id="adminPanel" style="display:none">
+    <div class="panel">
+      <div class="row">
+        <input id="search" type="search" placeholder="Пошук товару..." oninput="render()">
+        <button class="soft" onclick="loadProducts()">Оновити</button>
+        <a href="/">
+          <button class="soft" type="button">Магазин</button>
+        </a>
+      </div>
+    </div>
+
+    <div id="error" class="err"></div>
+    <div id="success" class="ok"></div>
+    <div id="loader" class="loader">Завантажую товари...</div>
+    <div id="grid" class="grid"></div>
+  </div>
+
+</div>
+
+<script>
+let products = [];
+let pin = '';
+
+function login() {
+  const value = String(document.getElementById('pinInput').value || '').trim();
+
+  if (!value) {
+    showError('Введи PIN-код.');
+    return;
+  }
+
+  pin = value;
+  localStorage.setItem('admin_pin', pin);
+
+  document.getElementById('loginPanel').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+
+  loadProducts();
+}
+
+function init() {
+  const savedPin = localStorage.getItem('admin_pin');
+
+  if (savedPin) {
+    pin = savedPin;
+    document.getElementById('loginPanel').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadProducts();
+  }
+}
+
+async function apiGetProducts() {
+  const response = await fetch('/.netlify/functions/api?action=products', {
+    cache: 'no-store'
+  });
+
+  const data = await response.json();
+
+  if (!data.ok) {
+    throw new Error(data.error || 'Помилка завантаження товарів.');
+  }
+
+  return data.products || [];
+}
+
+async function apiUpdateStock(productId, mode, value) {
+  const response = await fetch('/.netlify/functions/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action: 'updateStock',
+      pin: pin,
+      productId: productId,
+      mode: mode,
+      value: value
+    })
+  });
+
+  const data = await response.json();
+
+  if (!data.ok) {
+    throw new Error(data.error || 'Помилка оновлення залишку.');
+  }
+
+  return data;
+}
+
+async function loadProducts() {
+  try {
+    hideMessages();
+
+    document.getElementById('loader').style.display = 'block';
+    document.getElementById('grid').innerHTML = '';
+
+    products = await apiGetProducts();
+
+    document.getElementById('loader').style.display = 'none';
+
+    render();
+  } catch (error) {
+    document.getElementById('loader').style.display = 'none';
+    showError(error.message || String(error));
+  }
+}
+
+function render() {
+  const query = String(document.getElementById('search')?.value || '').toLowerCase().trim();
+  const grid = document.getElementById('grid');
+
+  grid.innerHTML = '';
+
+  const visible = products.filter(function(product) {
+    if (!query) return true;
+
+    return String(product.name || '').toLowerCase().includes(query) ||
+           String(product.category || '').toLowerCase().includes(query) ||
+           String(product.id || '').toLowerCase().includes(query);
+  });
+
+  if (!visible.length) {
+    grid.innerHTML = '<div class="loader">Товарів не знайдено.</div>';
+    return;
+  }
+
+  visible.forEach(function(product) {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const imageUrl = normalizeImageUrl(product.image);
+
+    const imageHtml = imageUrl
+      ? '<img src="' + escapeAttr(imageUrl) + '" onerror="this.parentElement.textContent=\\'🥤\\'">'
+      : '🥤';
+
+    card.innerHTML =
+      '<div class="top">' +
+        '<div class="img">' + imageHtml + '</div>' +
+        '<div>' +
+          '<div class="name">' + escapeHtml(product.name) + '</div>' +
+          '<div class="meta">' + escapeHtml(product.category || '') + ' · ' + product.price + ' грн</div>' +
+          '<div class="meta">ID: ' + escapeHtml(product.id) + '</div>' +
+        '</div>' +
+        '<div class="stock">' + product.stock + ' шт</div>' +
+      '</div>' +
+
+      '<div class="quick">' +
+        '<button class="soft" onclick="quickChange(\\'' + product.id + '\\', -1)">-1</button>' +
+        '<button class="soft" onclick="quickChange(\\'' + product.id + '\\', 1)">+1</button>' +
+        '<button class="soft" onclick="quickChange(\\'' + product.id + '\\', 5)">+5</button>' +
+        '<button class="soft" onclick="quickChange(\\'' + product.id + '\\', 10)">+10</button>' +
+      '</div>' +
+
+      '<div class="actions">' +
+        '<div class="box">' +
+          '<div class="label">Додати прихід</div>' +
+          '<div class="line">' +
+            '<input id="add_' + escapeAttr(product.id) + '" type="number" inputmode="numeric" placeholder="+ кількість">' +
+            '<button class="green" onclick="addStock(\\'' + product.id + '\\')">Додати</button>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="box">' +
+          '<div class="label">Встановити точний залишок</div>' +
+          '<div class="line">' +
+            '<input id="set_' + escapeAttr(product.id) + '" type="number" inputmode="numeric" placeholder="новий залишок">' +
+            '<button class="primary" onclick="setStock(\\'' + product.id + '\\')">Зберегти</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    grid.appendChild(card);
+  });
+}
+
+async function quickChange(productId, value) {
+  await updateStock(productId, 'add', value);
+}
+
+async function addStock(productId) {
+  const input = document.getElementById('add_' + productId);
+  const value = Number(input.value);
+
+  if (!value || value <= 0) {
+    showError('Введи кількість для поповнення.');
+    return;
+  }
+
+  await updateStock(productId, 'add', value);
+}
+
+async function setStock(productId) {
+  const input = document.getElementById('set_' + productId);
+  const value = Number(input.value);
+
+  if (isNaN(value) || value < 0) {
+    showError('Введи коректний новий залишок.');
+    return;
+  }
+
+  await updateStock(productId, 'set', value);
+}
+
+async function updateStock(productId, mode, value) {
+  try {
+    hideMessages();
+
+    const result = await apiUpdateStock(productId, mode, value);
+
+    showSuccess(
+      result.name + ': було ' + result.oldStock +
+      ', стало ' + result.newStock +
+      ' | зміна: ' + result.change
+    );
+
+    await loadProducts();
+  } catch (error) {
+    if (String(error.message || '').includes('PIN')) {
+      localStorage.removeItem('admin_pin');
+      pin = '';
+      document.getElementById('loginPanel').style.display = 'block';
+      document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    showError(error.message || String(error));
+  }
+}
+
+function normalizeImageUrl(url) {
+  const raw = String(url || '').trim();
+
+  if (!raw) return '';
+
+  if (raw.includes('drive.google.com/thumbnail')) return raw;
+
+  if (raw.startsWith('https://lh3.googleusercontent.com/')) return raw;
+
+  const matchFile = raw.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+
+  if (matchFile && matchFile[1]) {
+    return 'https://drive.google.com/thumbnail?id=' +
+      encodeURIComponent(matchFile[1]) +
+      '&sz=w500';
+  }
+
+  const matchOpen = raw.match(/[?&]id=([^&]+)/);
+
+  if (raw.includes('drive.google.com') && matchOpen && matchOpen[1]) {
+    return 'https://drive.google.com/thumbnail?id=' +
+      encodeURIComponent(matchOpen[1]) +
+      '&sz=w500';
+  }
+
+  return raw;
+}
+
+function showError(text) {
+  const errorBox = document.getElementById('error');
+  const successBox = document.getElementById('success');
+
+  errorBox.textContent = text;
+  errorBox.style.display = 'block';
+  successBox.style.display = 'none';
+}
+
+function showSuccess(text) {
+  const successBox = document.getElementById('success');
+  const errorBox = document.getElementById('error');
+
+  successBox.textContent = text;
+  successBox.style.display = 'block';
+  errorBox.style.display = 'none';
+}
+
+function hideMessages() {
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('success').style.display = 'none';
+}
+
+function escapeHtml(text) {
+  return String(text || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function escapeAttr(text) {
+  return escapeHtml(text);
+}
+
+init();
+</script>
 </body>
 </html>
