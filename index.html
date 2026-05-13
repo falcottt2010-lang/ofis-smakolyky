@@ -1,646 +1,508 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Смаколики в офісі</title>
 
-  <title>Смаколики в офісі</title>
+<style>
+*{box-sizing:border-box}
+:root{--p:#7b2cbf;--pd:#4b1d73;--ps:#f3e8ff;--b:#ead7fb;--bg:#fbf7ff;--t:#21172d;--m:#6b6175;--g:#19a463;--r:#d93025}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--t);padding-bottom:112px}
+.wrap{max-width:1040px;margin:0 auto;padding:14px}
+.hero{background:#fff;border:1px solid var(--b);border-radius:22px;padding:18px 16px;text-align:center;box-shadow:0 8px 24px rgba(70,20,120,.08);margin-bottom:14px;position:sticky;top:0;z-index:5}
+h1{margin:0;color:var(--p);font-size:30px;line-height:1.15}
+.sub{margin-top:8px;color:var(--m);font-size:15px}
+.tools{display:flex;gap:10px;margin:12px 0 14px;align-items:center}
+.search{flex:1;border:1px solid var(--b);border-radius:16px;padding:13px 14px;font-size:16px;background:#fff;outline:0}
+.refresh{border:0;border-radius:16px;padding:13px 14px;background:var(--ps);color:var(--pd);font-weight:900;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.card{background:#fff;border:1px solid var(--b);border-radius:20px;padding:12px;box-shadow:0 8px 20px rgba(70,20,120,.06);min-height:272px;display:flex;flex-direction:column}
+.img{height:122px;background:#fbf9ff;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;overflow:hidden;font-size:42px;border:1px solid #f1e7fb}
+.img img{max-width:100%;max-height:118px;object-fit:contain;display:block}
+.name{font-weight:900;min-height:38px;font-size:16px;line-height:1.2}
+.cat{color:var(--m);font-size:13px;margin-top:4px}
+.priceRow{display:flex;align-items:end;justify-content:space-between;gap:8px;margin-top:8px}
+.price{color:var(--p);font-size:25px;font-weight:900;line-height:1}
+.stock{color:var(--m);font-size:12px;text-align:right;white-space:nowrap}
+.buttons{display:grid;grid-template-columns:44px 32px 44px 1fr;align-items:center;gap:8px;margin-top:auto;padding-top:14px}
+button{border:0;border-radius:14px;font-size:16px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:disabled{opacity:.45;cursor:not-allowed}
+.qtyBtn{width:44px;height:44px;background:var(--ps);color:var(--pd)}
+.qty{min-width:30px;text-align:center;font-weight:900;font-size:18px}
+.add{height:44px;background:var(--p);color:#fff;padding:0 12px}
+.cart{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--b);box-shadow:0 -8px 24px rgba(70,20,120,.12);padding:12px 14px;z-index:20}
+.cartInner{max-width:1040px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.cartInfo{flex:1}
+.cartLabel{color:var(--m);font-size:14px;margin-bottom:2px}
+.total{color:var(--p);font-size:26px;font-weight:900;line-height:1}
+.pay{background:var(--g);color:#fff;padding:15px 20px;white-space:nowrap;min-width:145px}
+.loader{padding:18px;text-align:center;color:var(--m)}
+.error{display:none;background:#fff1f0;color:var(--r);border:1px solid #ffd1cc;border-radius:14px;margin-bottom:12px;padding:12px;white-space:pre-line}
+.modalBack{display:none;position:fixed;inset:0;background:rgba(20,10,30,.58);z-index:50;padding:14px;align-items:center;justify-content:center}
+.modal{width:100%;max-width:500px;background:#fff;border-radius:24px;padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.25);max-height:90vh;overflow:auto}
+.modal h2{margin:0 0 12px;color:var(--p)}
+.orderList{white-space:pre-line;background:#faf7ff;border:1px solid var(--b);border-radius:14px;padding:12px;margin:12px 0;font-size:14px;line-height:1.45}
+.cardNumber{background:var(--ps);color:var(--pd);border-radius:14px;padding:12px;font-weight:900;text-align:center;font-size:20px;margin:10px 0;letter-spacing:.3px}
+.actions{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.monoBtn{background:var(--p);color:#fff;padding:15px;text-align:center;text-decoration:none;border-radius:14px;font-weight:900;display:block}
+.paidBtn{background:var(--g);color:#fff;padding:15px;width:100%}
+.backBtn{background:#eee7f6;color:var(--pd);padding:15px;width:100%}
+.small{color:var(--m);font-size:13px;line-height:1.45}
 
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #faf7ff;
-      color: #21172d;
-      padding-bottom: 120px;
-    }
-
-    .wrap {
-      max-width: 950px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .hero {
-      background: #ffffff;
-      border: 1px solid #e6d4f7;
-      border-radius: 22px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 8px 24px rgba(70, 20, 120, 0.08);
-      margin-bottom: 14px;
-    }
-
-    h1 {
-      margin: 0;
-      color: #7b2cbf;
-      font-size: 30px;
-    }
-
-    .sub {
-      margin-top: 8px;
-      color: #6b6175;
-      font-size: 15px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
-    }
-
-    .card {
-      background: white;
-      border: 1px solid #e6d4f7;
-      border-radius: 18px;
-      padding: 12px;
-      box-shadow: 0 8px 20px rgba(70, 20, 120, 0.06);
-      min-height: 245px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .img {
-      height: 110px;
-      background: #fbf9ff;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-      overflow: hidden;
-      font-size: 38px;
-    }
-
-    .img img {
-      max-width: 100%;
-      max-height: 110px;
-      object-fit: contain;
-    }
-
-    .name {
-      font-weight: 800;
-      min-height: 38px;
-      font-size: 15px;
-    }
-
-    .cat {
-      color: #6b6175;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    .price {
-      color: #7b2cbf;
-      font-size: 24px;
-      font-weight: 900;
-      margin-top: 8px;
-    }
-
-    .stock {
-      color: #6b6175;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    .buttons {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: auto;
-      padding-top: 12px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 13px;
-      font-size: 16px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: .45;
-      cursor: not-allowed;
-    }
-
-    .qtyBtn {
-      width: 42px;
-      height: 42px;
-      background: #f3e8ff;
-      color: #4b1d73;
-    }
-
-    .qty {
-      min-width: 26px;
-      text-align: center;
-      font-weight: 900;
-      font-size: 18px;
-    }
-
-    .add {
-      flex: 1;
-      height: 42px;
-      background: #7b2cbf;
-      color: #ffffff;
-    }
-
-    .cart {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: white;
-      border-top: 1px solid #e6d4f7;
-      box-shadow: 0 -8px 24px rgba(70, 20, 120, .12);
-      padding: 12px 16px;
-      z-index: 10;
-    }
-
-    .cartInner {
-      max-width: 950px;
-      margin: 0 auto;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .cartInfo { flex: 1; }
-
-    .total {
-      color: #7b2cbf;
-      font-size: 24px;
-      font-weight: 900;
-    }
-
-    .pay {
-      background: #19a463;
-      color: #ffffff;
-      padding: 14px 18px;
-      white-space: nowrap;
-    }
-
-    .loader {
-      padding: 18px;
-      text-align: center;
-      color: #6b6175;
-    }
-
-    .error {
-      display: none;
-      background: #fff1f0;
-      color: #d93025;
-      border: 1px solid #ffd1cc;
-      border-radius: 14px;
-      margin-bottom: 12px;
-      padding: 12px;
-    }
-
-    .modalBack {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(20, 10, 30, 0.55);
-      z-index: 50;
-      padding: 16px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal {
-      width: 100%;
-      max-width: 480px;
-      background: white;
-      border-radius: 24px;
-      padding: 20px;
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
-    }
-
-    .modal h2 {
-      margin: 0 0 12px;
-      color: #7b2cbf;
-    }
-
-    .orderList {
-      white-space: pre-line;
-      background: #faf7ff;
-      border: 1px solid #e6d4f7;
-      border-radius: 14px;
-      padding: 12px;
-      margin: 12px 0;
-      font-size: 14px;
-    }
-
-    .cardNumber {
-      background: #f3e8ff;
-      color: #4b1d73;
-      border-radius: 14px;
-      padding: 12px;
-      font-weight: 900;
-      text-align: center;
-      font-size: 20px;
-      margin: 10px 0;
-    }
-
-    .modalActions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .monoBtn {
-      background: #7b2cbf;
-      color: white;
-      padding: 14px;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 14px;
-      font-weight: 900;
-      display: block;
-    }
-
-    .paidBtn {
-      background: #19a463;
-      color: white;
-      padding: 14px;
-      width: 100%;
-    }
-
-    .backBtn {
-      background: #eee7f6;
-      color: #4b1d73;
-      padding: 14px;
-      width: 100%;
-    }
-
-    .smallNote {
-      color: #6b6175;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    @media (max-width: 520px) {
-      .grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-
-      h1 { font-size: 24px; }
-
-      .card {
-        padding: 10px;
-        min-height: 225px;
-      }
-
-      .cartInner {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .pay { width: 100%; }
-    }
-  </style>
+@media(max-width:640px){
+body{padding-bottom:112px}
+.wrap{padding:10px}
+.hero{border-radius:18px;padding:14px 12px;margin-bottom:10px}
+h1{font-size:24px}
+.sub{font-size:13px}
+.tools{margin:10px 0}
+.grid{display:flex;flex-direction:column;gap:10px}
+.card{min-height:auto;border-radius:18px;padding:10px;display:grid;grid-template-columns:92px 1fr;grid-template-areas:"image name" "image cat" "image price" "buttons buttons";column-gap:12px;row-gap:4px}
+.img{grid-area:image;width:92px;height:92px;margin:0;border-radius:15px;font-size:34px}
+.img img{max-width:88px;max-height:88px}
+.name{grid-area:name;min-height:auto;font-size:15px;padding-top:3px}
+.cat{grid-area:cat;font-size:12px}
+.priceRow{grid-area:price;margin:5px 0 0}
+.price{font-size:22px}
+.stock{font-size:12px}
+.buttons{grid-area:buttons;grid-template-columns:48px 34px 48px 1fr;padding-top:8px}
+.qtyBtn{width:48px;height:44px}
+.add{height:44px}
+.cart{padding:10px}
+.cartInner{gap:10px}
+.cartLabel{font-size:13px}
+.total{font-size:24px}
+.pay{min-width:132px;padding:15px 14px}
+}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="hero">
-      <h1 id="title">Смаколики в офісі</h1>
-      <div class="sub">Обери товар → оплати → натисни “Я оплатив”</div>
-    </div>
-
-    <div id="error" class="error"></div>
-    <div id="loader" class="loader">Завантажую товари...</div>
-    <div id="grid" class="grid"></div>
+<div class="wrap">
+  <div class="hero">
+    <h1 id="title">Смаколики в офісі</h1>
+    <div class="sub">Обери товар → оплати → натисни “Я оплатив”</div>
   </div>
 
-  <div class="cart">
-    <div class="cartInner">
-      <div class="cartInfo">
-        <div>Кошик: <b id="count">0</b> шт.</div>
-        <div class="total"><span id="total">0</span> грн</div>
-      </div>
-
-      <button class="pay" onclick="openOrderModal()">Оформити</button>
-    </div>
+  <div class="tools">
+    <input id="search" class="search" type="search" placeholder="Пошук товару..." oninput="render()">
+    <button class="refresh" onclick="loadShop()">Оновити</button>
   </div>
 
-  <div id="modalBack" class="modalBack">
-    <div class="modal">
-      <h2>Оплата</h2>
+  <div id="error" class="error"></div>
+  <div id="loader" class="loader">Завантажую товари...</div>
+  <div id="grid" class="grid"></div>
+</div>
 
-      <div id="modalOrder" class="orderList"></div>
-
-      <div class="smallNote" id="paymentText">
-        Оплати через monobank, потім натисни “Я оплатив”.
-      </div>
-
-      <div class="cardNumber" id="cardNumber">4874 1000 2666 8288</div>
-
-      <div class="modalActions">
-        <a id="monoLink" class="monoBtn" href="#" target="_blank" rel="noopener">
-          Оплатити в monobank
-        </a>
-
-        <button class="paidBtn" onclick="confirmPaid()">
-          Я оплатив
-        </button>
-
-        <button class="backBtn" onclick="closeOrderModal()">
-          Назад
-        </button>
-      </div>
-
-      <p class="smallNote">
-        Важливо: натискай “Я оплатив” тільки після фактичної оплати.
-      </p>
+<div class="cart">
+  <div class="cartInner">
+    <div class="cartInfo">
+      <div class="cartLabel">Кошик: <b id="count">0</b> шт.</div>
+      <div class="total"><span id="total">0</span> грн</div>
     </div>
+    <button class="pay" onclick="openOrderModal()">Оформити</button>
   </div>
+</div>
 
-  <script>
-    let products = [];
-    let settings = {};
-    let cart = {};
+<div id="modalBack" class="modalBack">
+  <div class="modal">
+    <h2>Оплата</h2>
 
-    async function apiGetProducts() {
-      const response = await fetch('/.netlify/functions/api?action=products');
-      const data = await response.json();
+    <div id="modalOrder" class="orderList"></div>
 
-      if (!data.ok) {
-        throw new Error(data.error || 'Помилка завантаження товарів');
-      }
+    <div class="small" id="paymentText">
+      Оплати через monobank, потім натисни “Я оплатив”.
+    </div>
 
-      return data;
+    <div class="cardNumber" id="cardNumber">4874 1000 2666 8288</div>
+
+    <div class="actions">
+      <a id="monoLink" class="monoBtn" href="#" target="_blank" rel="noopener">
+        Оплатити в monobank
+      </a>
+
+      <button class="paidBtn" onclick="confirmPaid()">
+        Я оплатив
+      </button>
+
+      <button class="backBtn" onclick="closeOrderModal()">
+        Назад
+      </button>
+    </div>
+
+    <p class="small">
+      Важливо: натискай “Я оплатив” тільки після фактичної оплати.
+    </p>
+  </div>
+</div>
+
+<script>
+let products = [];
+let settings = {};
+let cart = {};
+let isLoading = false;
+
+async function apiGetProducts() {
+  const response = await fetch('/.netlify/functions/api?action=products', {
+    cache: 'no-store'
+  });
+
+  const data = await response.json();
+
+  if (!data.ok) {
+    throw new Error(data.error || 'Помилка завантаження товарів');
+  }
+
+  return data;
+}
+
+async function apiConfirmManualPayment(items) {
+  const response = await fetch('/.netlify/functions/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action: 'confirmManualPayment',
+      items: items
+    })
+  });
+
+  const data = await response.json();
+
+  if (!data.ok) {
+    throw new Error(data.error || 'Помилка запису замовлення');
+  }
+
+  return data;
+}
+
+async function loadShop() {
+  if (isLoading) return;
+
+  try {
+    isLoading = true;
+    hideError();
+
+    document.getElementById('loader').style.display = 'block';
+    document.getElementById('loader').textContent = 'Завантажую товари...';
+
+    const data = await apiGetProducts();
+
+    products = data.products || [];
+    settings = data.settings || {};
+
+    document.getElementById('title').textContent =
+      settings.title || 'Смаколики в офісі';
+
+    document.getElementById('paymentText').textContent =
+      settings.payment_text || 'Оплати через monobank, потім натисни “Я оплатив”.';
+
+    document.getElementById('cardNumber').textContent =
+      settings.card || '4874 1000 2666 8288';
+
+    document.getElementById('monoLink').href =
+      settings.mono_link || 'https://send.monobank.ua/jar/2tfoNe4ECT';
+
+    document.getElementById('loader').style.display = 'none';
+
+    render();
+  } catch (error) {
+    showError(error.message || String(error));
+  } finally {
+    isLoading = false;
+  }
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  const query = String(document.getElementById('search').value || '').toLowerCase().trim();
+
+  grid.innerHTML = '';
+
+  const visibleProducts = products.filter(function(p) {
+    if (!query) return true;
+
+    return String(p.name || '').toLowerCase().includes(query) ||
+           String(p.category || '').toLowerCase().includes(query);
+  });
+
+  if (!visibleProducts.length) {
+    grid.innerHTML = '<div class="loader">Товарів не знайдено.</div>';
+    renderCart();
+    return;
+  }
+
+  visibleProducts.forEach(function(p) {
+    const q = cart[p.id] || 0;
+    const disabled = Number(p.stock) <= 0;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const imgBox = document.createElement('div');
+    imgBox.className = 'img';
+
+    const imageUrl = normalizeImageUrl(p.image);
+
+    if (imageUrl) {
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = p.name;
+      img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
+      img.onerror = function() {
+        imgBox.textContent = '🥤';
+      };
+      imgBox.appendChild(img);
+    } else {
+      imgBox.textContent = '🥤';
     }
 
-    async function apiConfirmManualPayment(items) {
-      const response = await fetch('/.netlify/functions/api', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'confirmManualPayment', items })
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = p.name;
+
+    const cat = document.createElement('div');
+    cat.className = 'cat';
+    cat.textContent = p.category || '';
+
+    const priceRow = document.createElement('div');
+    priceRow.className = 'priceRow';
+
+    const price = document.createElement('div');
+    price.className = 'price';
+    price.textContent = p.price + ' грн';
+
+    const stock = document.createElement('div');
+    stock.className = 'stock';
+    stock.textContent = 'Залишок: ' + p.stock;
+
+    priceRow.appendChild(price);
+    priceRow.appendChild(stock);
+
+    const buttons = document.createElement('div');
+    buttons.className = 'buttons';
+
+    const minus = makeButton('qtyBtn', '−', q <= 0, function() {
+      changeQty(p.id, -1);
+    });
+
+    const qtyEl = document.createElement('div');
+    qtyEl.className = 'qty';
+    qtyEl.textContent = q;
+
+    const plus = makeButton('qtyBtn', '+', disabled || q >= p.stock, function() {
+      changeQty(p.id, 1);
+    });
+
+    const add = makeButton('add', disabled ? 'Немає' : 'Додати', disabled || q >= p.stock, function() {
+      changeQty(p.id, 1);
+    });
+
+    buttons.appendChild(minus);
+    buttons.appendChild(qtyEl);
+    buttons.appendChild(plus);
+    buttons.appendChild(add);
+
+    card.appendChild(imgBox);
+    card.appendChild(name);
+    card.appendChild(cat);
+    card.appendChild(priceRow);
+    card.appendChild(buttons);
+
+    grid.appendChild(card);
+  });
+
+  renderCart();
+}
+
+function makeButton(className, text, disabled, onClick) {
+  const button = document.createElement('button');
+  button.className = className;
+  button.textContent = text;
+  button.disabled = disabled;
+  button.onclick = onClick;
+  return button;
+}
+
+function normalizeImageUrl(url) {
+  const raw = String(url || '').trim();
+
+  if (!raw) return '';
+
+  if (raw.includes('drive.google.com/thumbnail')) {
+    return raw;
+  }
+
+  if (raw.startsWith('https://lh3.googleusercontent.com/')) {
+    return raw;
+  }
+
+  const matchFile = raw.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+
+  if (matchFile && matchFile[1]) {
+    return 'https://drive.google.com/thumbnail?id=' +
+      encodeURIComponent(matchFile[1]) +
+      '&sz=w500';
+  }
+
+  const matchOpen = raw.match(/[?&]id=([^&]+)/);
+
+  if (raw.includes('drive.google.com') && matchOpen && matchOpen[1]) {
+    return 'https://drive.google.com/thumbnail?id=' +
+      encodeURIComponent(matchOpen[1]) +
+      '&sz=w500';
+  }
+
+  return raw;
+}
+
+function changeQty(id, delta) {
+  const product = products.find(function(x) {
+    return x.id === id;
+  });
+
+  if (!product) return;
+
+  const current = cart[id] || 0;
+  const next = Math.max(0, Math.min(product.stock, current + delta));
+
+  if (next === 0) {
+    delete cart[id];
+  } else {
+    cart[id] = next;
+  }
+
+  render();
+}
+
+function getCartLines() {
+  return Object.keys(cart)
+    .map(function(id) {
+      const product = products.find(function(x) {
+        return x.id === id;
       });
 
-      const data = await response.json();
+      if (!product) return null;
 
-      if (!data.ok) {
-        throw new Error(data.error || 'Помилка запису замовлення');
-      }
+      return {
+        id: id,
+        qty: cart[id],
+        price: product.price,
+        name: product.name,
+        sum: cart[id] * product.price
+      };
+    })
+    .filter(Boolean);
+}
 
-      return data;
-    }
+function renderCart() {
+  const lines = getCartLines();
 
-    async function loadShop() {
-      try {
-        hideError();
+  const count = lines.reduce(function(total, item) {
+    return total + item.qty;
+  }, 0);
 
-        const data = await apiGetProducts();
+  const total = lines.reduce(function(sum, item) {
+    return sum + item.sum;
+  }, 0);
 
-        products = data.products || [];
-        settings = data.settings || {};
+  document.getElementById('count').textContent = count;
+  document.getElementById('total').textContent = total;
+}
 
-        document.getElementById('title').textContent =
-          settings.title || 'Смаколики в офісі';
+function openOrderModal() {
+  hideError();
 
-        document.getElementById('paymentText').textContent =
-          settings.payment_text || 'Оплати через monobank, потім натисни “Я оплатив”.';
+  const lines = getCartLines();
 
-        document.getElementById('cardNumber').textContent =
-          settings.card || '4874 1000 2666 8288';
+  if (!lines.length) {
+    showError('Спочатку додай товар у кошик.');
+    return;
+  }
 
-        document.getElementById('monoLink').href =
-          settings.mono_link || 'https://send.monobank.ua/jar/2tfoNe4ECT';
+  const text = lines.map(function(item) {
+    return item.name + ' x' + item.qty + ' = ' + item.sum + ' грн';
+  }).join('\n');
 
-        document.getElementById('loader').style.display = 'none';
+  const total = lines.reduce(function(sum, item) {
+    return sum + item.sum;
+  }, 0);
 
-        render();
-      } catch (error) {
-        showError(error.message || String(error));
-      }
-    }
+  document.getElementById('modalOrder').textContent =
+    text + '\n\nДо сплати: ' + total + ' грн';
 
-    function render() {
-      const grid = document.getElementById('grid');
-      grid.innerHTML = '';
+  document.getElementById('modalBack').style.display = 'flex';
+}
 
-      if (!products.length) {
-        grid.innerHTML = '<div class="loader">Активних товарів поки немає.</div>';
-        renderCart();
-        return;
-      }
+function closeOrderModal() {
+  document.getElementById('modalBack').style.display = 'none';
+}
 
-      products.forEach(function(p) {
-        const q = cart[p.id] || 0;
-        const disabled = p.stock <= 0;
+async function confirmPaid() {
+  hideError();
 
-        const card = document.createElement('div');
-        card.className = 'card';
+  const lines = getCartLines();
 
-        const imgBox = document.createElement('div');
-        imgBox.className = 'img';
+  if (!lines.length) {
+    closeOrderModal();
+    showError('Кошик порожній.');
+    return;
+  }
 
-        if (p.image) {
-          const img = document.createElement('img');
-          img.src = p.image;
-          img.alt = p.name;
-          imgBox.appendChild(img);
-        } else {
-          imgBox.textContent = '🥤';
-        }
+  const total = lines.reduce(function(sum, item) {
+    return sum + item.sum;
+  }, 0);
 
-        const name = document.createElement('div');
-        name.className = 'name';
-        name.textContent = p.name;
+  const ok = confirm(
+    'Підтверджуєш, що оплатив ' + total + ' грн?\n\n' +
+    'Після підтвердження замовлення буде записано як оплачене, а залишки спишуться.'
+  );
 
-        const cat = document.createElement('div');
-        cat.className = 'cat';
-        cat.textContent = p.category || '';
+  if (!ok) return;
 
-        const price = document.createElement('div');
-        price.className = 'price';
-        price.textContent = p.price + ' грн';
+  try {
+    const result = await apiConfirmManualPayment(
+      lines.map(function(item) {
+        return {
+          id: item.id,
+          qty: item.qty
+        };
+      })
+    );
 
-        const stock = document.createElement('div');
-        stock.className = 'stock';
-        stock.textContent = 'Залишок: ' + p.stock;
+    alert(
+      'Дякую!\n\n' +
+      'Замовлення: ' + result.orderNumber + '\n' +
+      'Сума: ' + result.total + ' грн\n' +
+      'Статус: Оплачено вручну'
+    );
 
-        const buttons = document.createElement('div');
-        buttons.className = 'buttons';
+    cart = {};
+    closeOrderModal();
+    await loadShop();
+  } catch (error) {
+    closeOrderModal();
+    showError(error.message || String(error));
+  }
+}
 
-        const minus = document.createElement('button');
-        minus.className = 'qtyBtn';
-        minus.textContent = '−';
-        minus.disabled = q <= 0;
-        minus.onclick = function() { changeQty(p.id, -1); };
+function showError(text) {
+  const error = document.getElementById('error');
+  error.textContent = text;
+  error.style.display = 'block';
+  document.getElementById('loader').style.display = 'none';
+}
 
-        const qty = document.createElement('div');
-        qty.className = 'qty';
-        qty.textContent = q;
+function hideError() {
+  const error = document.getElementById('error');
+  error.textContent = '';
+  error.style.display = 'none';
+}
 
-        const plus = document.createElement('button');
-        plus.className = 'qtyBtn';
-        plus.textContent = '+';
-        plus.disabled = disabled || q >= p.stock;
-        plus.onclick = function() { changeQty(p.id, 1); };
-
-        const add = document.createElement('button');
-        add.className = 'add';
-        add.textContent = disabled ? 'Немає' : 'Додати';
-        add.disabled = disabled || q >= p.stock;
-        add.onclick = function() { changeQty(p.id, 1); };
-
-        buttons.appendChild(minus);
-        buttons.appendChild(qty);
-        buttons.appendChild(plus);
-        buttons.appendChild(add);
-
-        card.appendChild(imgBox);
-        card.appendChild(name);
-        card.appendChild(cat);
-        card.appendChild(price);
-        card.appendChild(stock);
-        card.appendChild(buttons);
-
-        grid.appendChild(card);
-      });
-
-      renderCart();
-    }
-
-    function changeQty(id, delta) {
-      const p = products.find(function(x) { return x.id === id; });
-      if (!p) return;
-
-      const current = cart[id] || 0;
-      const next = Math.max(0, Math.min(p.stock, current + delta));
-
-      if (next === 0) delete cart[id];
-      else cart[id] = next;
-
-      render();
-    }
-
-    function getCartLines() {
-      return Object.keys(cart)
-        .map(function(id) {
-          const p = products.find(function(x) { return x.id === id; });
-          if (!p) return null;
-
-          return {
-            id: id,
-            qty: cart[id],
-            price: p.price,
-            name: p.name,
-            sum: cart[id] * p.price
-          };
-        })
-        .filter(Boolean);
-    }
-
-    function renderCart() {
-      const lines = getCartLines();
-
-      const count = lines.reduce(function(a, x) {
-        return a + x.qty;
-      }, 0);
-
-      const total = lines.reduce(function(a, x) {
-        return a + x.sum;
-      }, 0);
-
-      document.getElementById('count').textContent = count;
-      document.getElementById('total').textContent = total;
-    }
-
-    function openOrderModal() {
-      hideError();
-
-      const lines = getCartLines();
-
-      if (!lines.length) {
-        showError('Спочатку додай товар у кошик.');
-        return;
-      }
-
-      const text = lines.map(function(x) {
-        return x.name + ' x' + x.qty + ' = ' + x.sum + ' грн';
-      }).join('\n');
-
-      const total = lines.reduce(function(a, x) {
-        return a + x.sum;
-      }, 0);
-
-      document.getElementById('modalOrder').textContent =
-        text + '\n\nДо сплати: ' + total + ' грн';
-
-      document.getElementById('modalBack').style.display = 'flex';
-    }
-
-    function closeOrderModal() {
-      document.getElementById('modalBack').style.display = 'none';
-    }
-
-    async function confirmPaid() {
-      hideError();
-
-      const lines = getCartLines();
-
-      if (!lines.length) {
-        closeOrderModal();
-        showError('Кошик порожній.');
-        return;
-      }
-
-      const total = lines.reduce(function(a, x) {
-        return a + x.sum;
-      }, 0);
-
-      const ok = confirm(
-        'Підтверджуєш, що оплатив ' + total + ' грн?\n\n' +
-        'Після підтвердження замовлення буде записано як оплачене, а залишки спишуться.'
-      );
-
-      if (!ok) return;
-
-      try {
-        const result = await apiConfirmManualPayment(
-          lines.map(function(x) {
-            return { id: x.id, qty: x.qty };
-          })
-        );
-
-        alert(
-          'Дякую!\n\n' +
-          'Замовлення: ' + result.orderNumber + '\n' +
-          'Сума: ' + result.total + ' грн\n' +
-          'Статус: Оплачено вручну'
-        );
-
-        cart = {};
-        closeOrderModal();
-        await loadShop();
-      } catch (error) {
-        closeOrderModal();
-        showError(error.message || String(error));
-      }
-    }
-
-    function showError(text) {
-      const el = document.getElementById('error');
-      el.textContent = text;
-      el.style.display = 'block';
-      document.getElementById('loader').style.display = 'none';
-    }
-
-    function hideError() {
-      const el = document.getElementById('error');
-      el.textContent = '';
-      el.style.display = 'none';
-    }
-
-    loadShop();
-  </script>
+loadShop();
+</script>
 </body>
 </html>
