@@ -1,0 +1,9 @@
+{
+  "name": "ofis-smakolyky",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Office snack mini shop with Google Sheets backend",
+  "scripts": {
+    "start": "netlify dev"
+  }
+}
