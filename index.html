@@ -118,11 +118,11 @@ h1{font-size:24px}
     <div class="cardNumber" id="cardNumber">4874 1000 2666 8288</div>
 
     <div class="actions">
-      <a id="monoLink" class="monoBtn" href="#" target="_blank" rel="noopener">
+      <button id="payMonoBtn" class="monoBtn" onclick="startPayment()">
         Оплатити в monobank
-      </a>
+      </button>
 
-      <button class="paidBtn" onclick="confirmPaid()">
+      <button id="customerConfirmBtn" class="paidBtn" onclick="customerConfirmPaid()" disabled>
         Я оплатив
       </button>
 
@@ -132,7 +132,8 @@ h1{font-size:24px}
     </div>
 
     <p class="small">
-      Важливо: натискай “Я оплатив” тільки після фактичної оплати.
+      Важливо: після натискання “Оплатити в monobank” замовлення зʼявиться у таблиці.
+      Після оплати натисни “Я оплатив”.
     </p>
   </div>
 </div>
@@ -141,6 +142,7 @@ h1{font-size:24px}
 let products = [];
 let settings = {};
 let cart = {};
+let currentOrder = null;
 let isLoading = false;
 
 async function apiGetProducts() {
@@ -157,14 +159,14 @@ async function apiGetProducts() {
   return data;
 }
 
-async function apiConfirmManualPayment(items) {
+async function apiCreatePendingOrder(items) {
   const response = await fetch('/.netlify/functions/api', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      action: 'confirmManualPayment',
+      action: 'createPendingOrder',
       items: items
     })
   });
@@ -172,7 +174,28 @@ async function apiConfirmManualPayment(items) {
   const data = await response.json();
 
   if (!data.ok) {
-    throw new Error(data.error || 'Помилка запису замовлення');
+    throw new Error(data.error || 'Помилка створення замовлення');
+  }
+
+  return data;
+}
+
+async function apiCustomerConfirmPayment(orderNumber) {
+  const response = await fetch('/.netlify/functions/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action: 'customerConfirmPayment',
+      orderNumber: orderNumber
+    })
+  });
+
+  const data = await response.json();
+
+  if (!data.ok) {
+    throw new Error(data.error || 'Помилка підтвердження оплати');
   }
 
   return data;
@@ -201,9 +224,6 @@ async function loadShop() {
 
     document.getElementById('cardNumber').textContent =
       settings.card || '4874 1000 2666 8288';
-
-    document.getElementById('monoLink').href =
-      settings.mono_link || 'https://send.monobank.ua/jar/2tfoNe4ECT';
 
     document.getElementById('loader').style.display = 'none';
 
@@ -332,13 +352,9 @@ function normalizeImageUrl(url) {
 
   if (!raw) return '';
 
-  if (raw.includes('drive.google.com/thumbnail')) {
-    return raw;
-  }
+  if (raw.includes('drive.google.com/thumbnail')) return raw;
 
-  if (raw.startsWith('https://lh3.googleusercontent.com/')) {
-    return raw;
-  }
+  if (raw.startsWith('https://lh3.googleusercontent.com/')) return raw;
 
   const matchFile = raw.match(/drive\.google\.com\/file\/d\/([^/]+)/);
 
@@ -423,6 +439,8 @@ function openOrderModal() {
     return;
   }
 
+  currentOrder = null;
+
   const text = lines.map(function(item) {
     return item.name + ' x' + item.qty + ' = ' + item.sum + ' грн';
   }).join('\n');
@@ -432,7 +450,13 @@ function openOrderModal() {
   }, 0);
 
   document.getElementById('modalOrder').textContent =
-    text + '\n\nДо сплати: ' + total + ' грн';
+    text +
+    '\n\nДо сплати: ' + total + ' грн' +
+    '\n\n1. Натисни “Оплатити в monobank”.' +
+    '\n2. Після оплати повернись і натисни “Я оплатив”.';
+
+  const confirmBtn = document.getElementById('customerConfirmBtn');
+  if (confirmBtn) confirmBtn.disabled = true;
 
   document.getElementById('modalBack').style.display = 'flex';
 }
@@ -441,7 +465,7 @@ function closeOrderModal() {
   document.getElementById('modalBack').style.display = 'none';
 }
 
-async function confirmPaid() {
+async function startPayment() {
   hideError();
 
   const lines = getCartLines();
@@ -452,37 +476,60 @@ async function confirmPaid() {
     return;
   }
 
-  const total = lines.reduce(function(sum, item) {
-    return sum + item.sum;
-  }, 0);
-
-  const ok = confirm(
-    'Підтверджуєш, що оплатив ' + total + ' грн?\n\n' +
-    'Після підтвердження замовлення буде записано як оплачене, а залишки спишуться.'
-  );
-
-  if (!ok) return;
-
   try {
-    const result = await apiConfirmManualPayment(
-      lines.map(function(item) {
-        return {
-          id: item.id,
-          qty: item.qty
-        };
-      })
-    );
+    if (!currentOrder) {
+      currentOrder = await apiCreatePendingOrder(
+        lines.map(function(item) {
+          return {
+            id: item.id,
+            qty: item.qty
+          };
+        })
+      );
+    }
+
+    const confirmBtn = document.getElementById('customerConfirmBtn');
+    if (confirmBtn) confirmBtn.disabled = false;
+
+    window.open(currentOrder.monoLink || settings.mono_link, '_blank');
 
     alert(
-      'Дякую!\n\n' +
+      'Замовлення створено!\n\n' +
+      'Номер: ' + currentOrder.orderNumber + '\n' +
+      'Сума: ' + currentOrder.total + ' грн\n' +
+      'Статус: Очікує оплату\n\n' +
+      'Після оплати повернись і натисни “Я оплатив”.'
+    );
+
+  } catch (error) {
+    closeOrderModal();
+    showError(error.message || String(error));
+  }
+}
+
+async function customerConfirmPaid() {
+  hideError();
+
+  if (!currentOrder || !currentOrder.orderNumber) {
+    showError('Спочатку натисни “Оплатити в monobank”, щоб створити замовлення.');
+    return;
+  }
+
+  try {
+    const result = await apiCustomerConfirmPayment(currentOrder.orderNumber);
+
+    alert(
+      'Дякуємо!\n\n' +
       'Замовлення: ' + result.orderNumber + '\n' +
-      'Сума: ' + result.total + ' грн\n' +
-      'Статус: Оплачено вручну'
+      'Статус: Покупець підтвердив оплату\n\n' +
+      'Оплату перевірить адміністратор.'
     );
 
     cart = {};
+    currentOrder = null;
     closeOrderModal();
     await loadShop();
+
   } catch (error) {
     closeOrderModal();
     showError(error.message || String(error));
