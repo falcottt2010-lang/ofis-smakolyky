@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Адмінка залишків</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#fbf7ff;color:#21172d}.wrap{max-width:980px;margin:auto;padding:12px}.hero,.panel,.card{background:#fff;border:1px solid #ead7fb;border-radius:18px;box-shadow:0 8px 20px rgba(70,20,120,.06)}.hero{text-align:center;padding:18px;margin-bottom:12px}h1{margin:0;color:#7b2cbf;font-size:28px}.sub,.meta,.label{color:#6b6175;font-size:13px}.panel{padding:12px;margin-bottom:12px}.row{display:flex;gap:10px}input{width:100%;border:1px solid #ead7fb;border-radius:14px;padding:12px;font-size:16px}button{border:0;border-radius:14px;padding:12px 14px;font-weight:900;font-size:15px;cursor:pointer}.primary{background:#7b2cbf;color:#fff}.green{background:#19a463;color:#fff}.soft{background:#f3e8ff;color:#4b1d73}.grid{display:flex;flex-direction:column;gap:10px}.card{padding:12px}.top{display:grid;grid-template-columns:72px 1fr auto;gap:12px;align-items:center}.img{width:72px;height:72px;border-radius:14px;background:#fbf9ff;border:1px solid #f1e7fb;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:28px}.img img{max-width:70px;max-height:70px;object-fit:contain}.name{font-weight:900;font-size:16px}.stock{font-size:22px;font-weight:900;color:#7b2cbf;text-align:right}.quick{display:flex;gap:8px;margin-top:10px}.quick button{flex:1}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.box{background:#faf7ff;border:1px solid #ead7fb;border-radius:16px;padding:10px}.line{display:flex;gap:8px}.err{display:none;background:#fff1f0;color:#d93025;border:1px solid #ffd1cc;border-radius:14px;margin-bottom:12px;padding:12px}.ok{display:none;background:#effaf4;color:#157347;border:1px solid #c9f0d8;border-radius:14px;margin-bottom:12px;padding:12px}.loader{padding:18px;text-align:center;color:#6b6175}@media(max-width:640px){.wrap{padding:10px}.row{flex-direction:column}.actions{grid-template-columns:1fr}.top{grid-template-columns:64px 1fr auto}.img{width:64px;height:64px}.stock{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero"><h1>Адмінка залишків</h1><div class="sub">Поповнення, корекція та швидке редагування складу</div></div>
+  <div class="panel" id="loginPanel"><div class="row"><input id="pinInput" type="password" placeholder="Введи PIN-код"><button class="primary" onclick="login()">Увійти</button></div></div>
+  <div id="adminPanel" style="display:none">
+    <div class="panel"><div class="row"><input id="search" type="search" placeholder="Пошук товару..." oninput="render()"><button class="soft" onclick="loadProducts()">Оновити</button><a href="/"><button class="soft" type="button">Магазин</button></a></div></div>
+    <div id="error" class="err"></div><div id="success" class="ok"></div><div id="loader" class="loader">Завантажую товари...</div><div id="grid" class="grid"></div>
+  </div>
+</div>
+<script>
+let products=[],pin='';
+function login(){const v=String(pinInput.value||'').trim();if(!v){showError('Введи PIN-код.');return}pin=v;localStorage.setItem('admin_pin',pin);loginPanel.style.display='none';adminPanel.style.display='block';loadProducts()}
+function init(){const saved=localStorage.getItem('admin_pin');if(saved){pin=saved;loginPanel.style.display='none';adminPanel.style.display='block';loadProducts()}}
+async function apiGetProducts(){const r=await fetch('/.netlify/functions/api?action=products',{cache:'no-store'});const d=await r.json();if(!d.ok)throw new Error(d.error||'Помилка завантаження товарів.');return d.products||[]}
+async function apiUpdateStock(productId,mode,value){const r=await fetch('/.netlify/functions/api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'updateStock',pin,productId,mode,value})});const d=await r.json();if(!d.ok)throw new Error(d.error||'Помилка оновлення залишку.');return d}
+async function loadProducts(){try{hideMessages();loader.style.display='block';grid.innerHTML='';products=await apiGetProducts();loader.style.display='none';render()}catch(e){loader.style.display='none';showError(e.message||String(e))}}
+function render(){const q=String(search?.value||'').toLowerCase().trim();grid.innerHTML='';const visible=products.filter(p=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.category||'').toLowerCase().includes(q)||String(p.id||'').toLowerCase().includes(q));if(!visible.length){grid.innerHTML='<div class="loader">Товарів не знайдено.</div>';return}visible.forEach(p=>{const card=document.createElement('div');card.className='card';const u=normalizeImageUrl(p.image);const img=u?'<img src="'+escapeAttr(u)+'" onerror="this.parentElement.textContent=\'🥤\'">':'🥤';card.innerHTML='<div class="top"><div class="img">'+img+'</div><div><div class="name">'+escapeHtml(p.name)+'</div><div class="meta">'+escapeHtml(p.category||'')+' · '+p.price+' грн</div><div class="meta">ID: '+escapeHtml(p.id)+'</div></div><div class="stock">'+p.stock+' шт</div></div><div class="quick"><button class="soft" onclick="quickChange(\''+p.id+'\',-1)">-1</button><button class="soft" onclick="quickChange(\''+p.id+'\',1)">+1</button><button class="soft" onclick="quickChange(\''+p.id+'\',5)">+5</button><button class="soft" onclick="quickChange(\''+p.id+'\',10)">+10</button></div><div class="actions"><div class="box"><div class="label">Додати прихід</div><div class="line"><input id="add_'+escapeAttr(p.id)+'" type="number" inputmode="numeric" placeholder="+ кількість"><button class="green" onclick="addStock(\''+p.id+'\')">Додати</button></div></div><div class="box"><div class="label">Встановити точний залишок</div><div class="line"><input id="set_'+escapeAttr(p.id)+'" type="number" inputmode="numeric" placeholder="новий залишок"><button class="primary" onclick="setStock(\''+p.id+'\')">Зберегти</button></div></div></div>';grid.appendChild(card)})}
+async function quickChange(id,value){await updateStock(id,'add',value)}
+async function addStock(id){const input=document.getElementById('add_'+id);const v=Number(input.value);if(!v||v<=0){showError('Введи кількість для поповнення.');return}await updateStock(id,'add',v)}
+async function setStock(id){const input=document.getElementById('set_'+id);const v=Number(input.value);if(isNaN(v)||v<0){showError('Введи коректний новий залишок.');return}await updateStock(id,'set',v)}
+async function updateStock(id,mode,value){try{hideMessages();const r=await apiUpdateStock(id,mode,value);showSuccess(r.name+': було '+r.oldStock+', стало '+r.newStock+' | зміна: '+r.change);await loadProducts()}catch(e){if(String(e.message||'').includes('PIN')){localStorage.removeItem('admin_pin');pin='';loginPanel.style.display='block';adminPanel.style.display='none'}showError(e.message||String(e))}}
+function normalizeImageUrl(url){const raw=String(url||'').trim();if(!raw)return '';if(raw.includes('drive.google.com/thumbnail'))return raw;if(raw.startsWith('https://lh3.googleusercontent.com/'))return raw;let m=raw.match(/drive\.google\.com\/file\/d\/([^/]+)/);if(m&&m[1])return 'https://drive.google.com/thumbnail?id='+encodeURIComponent(m[1])+'&sz=w500';m=raw.match(/[?&]id=([^&]+)/);if(raw.includes('drive.google.com')&&m&&m[1])return 'https://drive.google.com/thumbnail?id='+encodeURIComponent(m[1])+'&sz=w500';return raw}
+function showError(t){error.textContent=t;error.style.display='block';success.style.display='none'}
+function showSuccess(t){success.textContent=t;success.style.display='block';error.style.display='none'}
+function hideMessages(){error.style.display='none';success.style.display='none'}
+function escapeHtml(t){return String(t||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;")}
+function escapeAttr(t){return escapeHtml(t)}
+init();
+</script>
+</body>
+</html>
