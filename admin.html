@@ -7,196 +7,41 @@
 
 <style>
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#fbf7ff;
-  color:#21172d
-}
-
-.wrap{
-  max-width:980px;
-  margin:auto;
-  padding:12px
-}
-
-.hero,.panel,.card{
-  background:#fff;
-  border:1px solid #ead7fb;
-  border-radius:18px;
-  box-shadow:0 8px 20px rgba(70,20,120,.06)
-}
-
-.hero{
-  text-align:center;
-  padding:18px;
-  margin-bottom:12px
-}
-
-h1{
-  margin:0;
-  color:#7b2cbf;
-  font-size:28px
-}
-
-.sub,.meta,.label{
-  color:#6b6175;
-  font-size:13px
-}
-
-.panel{
-  padding:12px;
-  margin-bottom:12px
-}
-
-.row{
-  display:flex;
-  gap:10px
-}
-
-input{
-  width:100%;
-  border:1px solid #ead7fb;
-  border-radius:14px;
-  padding:12px;
-  font-size:16px
-}
-
-button{
-  border:0;
-  border-radius:14px;
-  padding:12px 14px;
-  font-weight:900;
-  font-size:15px;
-  cursor:pointer
-}
-
-.primary{
-  background:#7b2cbf;
-  color:#fff
-}
-
-.green{
-  background:#19a463;
-  color:#fff
-}
-
-.soft{
-  background:#f3e8ff;
-  color:#4b1d73
-}
-
-.grid{
-  display:flex;
-  flex-direction:column;
-  gap:10px
-}
-
-.card{
-  padding:12px
-}
-
-.top{
-  display:grid;
-  grid-template-columns:72px 1fr auto;
-  gap:12px;
-  align-items:center
-}
-
-.img{
-  width:72px;
-  height:72px;
-  border-radius:14px;
-  background:#fbf9ff;
-  border:1px solid #f1e7fb;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  font-size:28px
-}
-
-.img img{
-  max-width:70px;
-  max-height:70px;
-  object-fit:contain
-}
-
-.name{
-  font-weight:900;
-  font-size:16px
-}
-
-.stock{
-  font-size:22px;
-  font-weight:900;
-  color:#7b2cbf;
-  text-align:right
-}
-
-.quick{
-  display:flex;
-  gap:8px;
-  margin-top:10px
-}
-
-.quick button{
-  flex:1
-}
-
-.actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:12px
-}
-
-.box{
-  background:#faf7ff;
-  border:1px solid #ead7fb;
-  border-radius:16px;
-  padding:10px
-}
-
-.line{
-  display:flex;
-  gap:8px
-}
-
-.err{
-  display:none;
-  background:#fff1f0;
-  color:#d93025;
-  border:1px solid #ffd1cc;
-  border-radius:14px;
-  margin-bottom:12px;
-  padding:12px
-}
-
-.ok{
-  display:none;
-  background:#effaf4;
-  color:#157347;
-  border:1px solid #c9f0d8;
-  border-radius:14px;
-  margin-bottom:12px;
-  padding:12px
-}
-
-.loader{
-  padding:18px;
-  text-align:center;
-  color:#6b6175
-}
-
+body{margin:0;font-family:Arial,sans-serif;background:#fbf7ff;color:#21172d}
+.wrap{max-width:980px;margin:auto;padding:12px}
+.hero,.panel,.card{background:#fff;border:1px solid #ead7fb;border-radius:18px;box-shadow:0 8px 20px rgba(70,20,120,.06)}
+.hero{text-align:center;padding:18px;margin-bottom:12px}
+h1{margin:0;color:#7b2cbf;font-size:28px}
+.sub,.meta,.label{color:#6b6175;font-size:13px}
+.panel{padding:12px;margin-bottom:12px}
+.row{display:flex;gap:10px}
+input{width:100%;border:1px solid #ead7fb;border-radius:14px;padding:12px;font-size:16px}
+button{border:0;border-radius:14px;padding:12px 14px;font-weight:900;font-size:15px;cursor:pointer}
+.primary{background:#7b2cbf;color:#fff}
+.green{background:#19a463;color:#fff}
+.soft{background:#f3e8ff;color:#4b1d73}
+.grid{display:flex;flex-direction:column;gap:10px}
+.card{padding:12px}
+.top{display:grid;grid-template-columns:72px 1fr auto;gap:12px;align-items:center}
+.img{width:72px;height:72px;border-radius:14px;background:#fbf9ff;border:1px solid #f1e7fb;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:28px}
+.img img{max-width:70px;max-height:70px;object-fit:contain}
+.name{font-weight:900;font-size:16px}
+.stock{font-size:22px;font-weight:900;color:#7b2cbf;text-align:right}
+.quick{display:flex;gap:8px;margin-top:10px}
+.quick button{flex:1}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.box{background:#faf7ff;border:1px solid #ead7fb;border-radius:16px;padding:10px}
+.line{display:flex;gap:8px}
+.err{display:none;background:#fff1f0;color:#d93025;border:1px solid #ffd1cc;border-radius:14px;margin-bottom:12px;padding:12px;white-space:pre-line}
+.ok{display:none;background:#effaf4;color:#157347;border:1px solid #c9f0d8;border-radius:14px;margin-bottom:12px;padding:12px;white-space:pre-line}
+.loader{display:none;padding:18px;text-align:center;color:#6b6175}
 @media(max-width:640px){
-  .wrap{padding:10px}
-  .row{flex-direction:column}
-  .actions{grid-template-columns:1fr}
-  .top{grid-template-columns:64px 1fr auto}
-  .img{width:64px;height:64px}
-  .stock{font-size:20px}
+.wrap{padding:10px}
+.row{flex-direction:column}
+.actions{grid-template-columns:1fr}
+.top{grid-template-columns:64px 1fr auto}
+.img{width:64px;height:64px}
+.stock{font-size:20px}
 }
 </style>
 </head>
@@ -209,26 +54,27 @@ button{
     <div class="sub">Поповнення, корекція та швидке редагування складу</div>
   </div>
 
+  <div id="messageError" class="err"></div>
+  <div id="messageSuccess" class="ok"></div>
+
   <div class="panel" id="loginPanel">
     <div class="row">
       <input id="pinInput" type="password" placeholder="Введи PIN-код">
-      <button class="primary" onclick="login()">Увійти</button>
+      <button class="primary" id="loginBtn">Увійти</button>
     </div>
   </div>
 
   <div id="adminPanel" style="display:none">
     <div class="panel">
       <div class="row">
-        <input id="search" type="search" placeholder="Пошук товару..." oninput="render()">
-        <button class="soft" onclick="loadProducts()">Оновити</button>
-        <a href="/">
+        <input id="searchInput" type="search" placeholder="Пошук товару...">
+        <button class="soft" id="refreshBtn">Оновити</button>
+        <a href="/" style="text-decoration:none">
           <button class="soft" type="button">Магазин</button>
         </a>
       </div>
     </div>
 
-    <div id="error" class="err"></div>
-    <div id="success" class="ok"></div>
     <div id="loader" class="loader">Завантажую товари...</div>
     <div id="grid" class="grid"></div>
   </div>
@@ -237,7 +83,21 @@ button{
 
 <script>
 let products = [];
-let pin = '';
+let adminPin = '';
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('loginBtn').addEventListener('click', login);
+  document.getElementById('refreshBtn').addEventListener('click', loadProducts);
+  document.getElementById('searchInput').addEventListener('input', render);
+
+  const savedPin = localStorage.getItem('admin_pin');
+
+  if (savedPin) {
+    adminPin = savedPin;
+    showAdminPanel();
+    loadProducts();
+  }
+});
 
 function login() {
   const value = String(document.getElementById('pinInput').value || '').trim();
@@ -247,62 +107,16 @@ function login() {
     return;
   }
 
-  pin = value;
-  localStorage.setItem('admin_pin', pin);
+  adminPin = value;
+  localStorage.setItem('admin_pin', adminPin);
 
-  document.getElementById('loginPanel').style.display = 'none';
-  document.getElementById('adminPanel').style.display = 'block';
-
+  showAdminPanel();
   loadProducts();
 }
 
-function init() {
-  const savedPin = localStorage.getItem('admin_pin');
-
-  if (savedPin) {
-    pin = savedPin;
-    document.getElementById('loginPanel').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    loadProducts();
-  }
-}
-
-async function apiGetProducts() {
-  const response = await fetch('/.netlify/functions/api?action=products', {
-    cache: 'no-store'
-  });
-
-  const data = await response.json();
-
-  if (!data.ok) {
-    throw new Error(data.error || 'Помилка завантаження товарів.');
-  }
-
-  return data.products || [];
-}
-
-async function apiUpdateStock(productId, mode, value) {
-  const response = await fetch('/.netlify/functions/api', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      action: 'updateStock',
-      pin: pin,
-      productId: productId,
-      mode: mode,
-      value: value
-    })
-  });
-
-  const data = await response.json();
-
-  if (!data.ok) {
-    throw new Error(data.error || 'Помилка оновлення залишку.');
-  }
-
-  return data;
+function showAdminPanel() {
+  document.getElementById('loginPanel').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
 }
 
 async function loadProducts() {
@@ -312,19 +126,29 @@ async function loadProducts() {
     document.getElementById('loader').style.display = 'block';
     document.getElementById('grid').innerHTML = '';
 
-    products = await apiGetProducts();
+    const response = await fetch('/.netlify/functions/api?action=products', {
+      cache: 'no-store'
+    });
+
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error(data.error || 'Не вдалося завантажити товари.');
+    }
+
+    products = data.products || [];
 
     document.getElementById('loader').style.display = 'none';
 
     render();
   } catch (error) {
     document.getElementById('loader').style.display = 'none';
-    showError(error.message || String(error));
+    showError('Помилка завантаження товарів:\n' + (error.message || String(error)));
   }
 }
 
 function render() {
-  const query = String(document.getElementById('search')?.value || '').toLowerCase().trim();
+  const query = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
   const grid = document.getElementById('grid');
 
   grid.innerHTML = '';
@@ -338,7 +162,7 @@ function render() {
   });
 
   if (!visible.length) {
-    grid.innerHTML = '<div class="loader">Товарів не знайдено.</div>';
+    grid.innerHTML = '<div class="loader" style="display:block">Товарів не знайдено.</div>';
     return;
   }
 
@@ -346,102 +170,198 @@ function render() {
     const card = document.createElement('div');
     card.className = 'card';
 
+    const top = document.createElement('div');
+    top.className = 'top';
+
+    const imgBox = document.createElement('div');
+    imgBox.className = 'img';
+
     const imageUrl = normalizeImageUrl(product.image);
 
-    const imageHtml = imageUrl
-      ? '<img src="' + escapeAttr(imageUrl) + '" onerror="this.parentElement.textContent=\\'🥤\\'">'
-      : '🥤';
+    if (imageUrl) {
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = product.name;
+      img.onerror = function() {
+        imgBox.textContent = '🥤';
+      };
+      imgBox.appendChild(img);
+    } else {
+      imgBox.textContent = '🥤';
+    }
 
-    card.innerHTML =
-      '<div class="top">' +
-        '<div class="img">' + imageHtml + '</div>' +
-        '<div>' +
-          '<div class="name">' + escapeHtml(product.name) + '</div>' +
-          '<div class="meta">' + escapeHtml(product.category || '') + ' · ' + product.price + ' грн</div>' +
-          '<div class="meta">ID: ' + escapeHtml(product.id) + '</div>' +
-        '</div>' +
-        '<div class="stock">' + product.stock + ' шт</div>' +
-      '</div>' +
+    const info = document.createElement('div');
 
-      '<div class="quick">' +
-        '<button class="soft" onclick="quickChange(\\'' + product.id + '\\', -1)">-1</button>' +
-        '<button class="soft" onclick="quickChange(\\'' + product.id + '\\', 1)">+1</button>' +
-        '<button class="soft" onclick="quickChange(\\'' + product.id + '\\', 5)">+5</button>' +
-        '<button class="soft" onclick="quickChange(\\'' + product.id + '\\', 10)">+10</button>' +
-      '</div>' +
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = product.name;
 
-      '<div class="actions">' +
-        '<div class="box">' +
-          '<div class="label">Додати прихід</div>' +
-          '<div class="line">' +
-            '<input id="add_' + escapeAttr(product.id) + '" type="number" inputmode="numeric" placeholder="+ кількість">' +
-            '<button class="green" onclick="addStock(\\'' + product.id + '\\')">Додати</button>' +
-          '</div>' +
-        '</div>' +
+    const meta1 = document.createElement('div');
+    meta1.className = 'meta';
+    meta1.textContent = (product.category || '') + ' · ' + product.price + ' грн';
 
-        '<div class="box">' +
-          '<div class="label">Встановити точний залишок</div>' +
-          '<div class="line">' +
-            '<input id="set_' + escapeAttr(product.id) + '" type="number" inputmode="numeric" placeholder="новий залишок">' +
-            '<button class="primary" onclick="setStock(\\'' + product.id + '\\')">Зберегти</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
+    const meta2 = document.createElement('div');
+    meta2.className = 'meta';
+    meta2.textContent = 'ID: ' + product.id;
+
+    info.appendChild(name);
+    info.appendChild(meta1);
+    info.appendChild(meta2);
+
+    const stock = document.createElement('div');
+    stock.className = 'stock';
+    stock.textContent = product.stock + ' шт';
+
+    top.appendChild(imgBox);
+    top.appendChild(info);
+    top.appendChild(stock);
+
+    const quick = document.createElement('div');
+    quick.className = 'quick';
+
+    quick.appendChild(createButton('-1', 'soft', function() {
+      updateStock(product.id, 'add', -1);
+    }));
+
+    quick.appendChild(createButton('+1', 'soft', function() {
+      updateStock(product.id, 'add', 1);
+    }));
+
+    quick.appendChild(createButton('+5', 'soft', function() {
+      updateStock(product.id, 'add', 5);
+    }));
+
+    quick.appendChild(createButton('+10', 'soft', function() {
+      updateStock(product.id, 'add', 10);
+    }));
+
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+
+    const addBox = document.createElement('div');
+    addBox.className = 'box';
+
+    const addLabel = document.createElement('div');
+    addLabel.className = 'label';
+    addLabel.textContent = 'Додати прихід';
+
+    const addLine = document.createElement('div');
+    addLine.className = 'line';
+
+    const addInput = document.createElement('input');
+    addInput.type = 'number';
+    addInput.inputMode = 'numeric';
+    addInput.placeholder = '+ кількість';
+
+    const addBtn = createButton('Додати', 'green', function() {
+      const value = Number(addInput.value);
+
+      if (!value || value <= 0) {
+        showError('Введи кількість для поповнення.');
+        return;
+      }
+
+      updateStock(product.id, 'add', value);
+      addInput.value = '';
+    });
+
+    addLine.appendChild(addInput);
+    addLine.appendChild(addBtn);
+    addBox.appendChild(addLabel);
+    addBox.appendChild(addLine);
+
+    const setBox = document.createElement('div');
+    setBox.className = 'box';
+
+    const setLabel = document.createElement('div');
+    setLabel.className = 'label';
+    setLabel.textContent = 'Встановити точний залишок';
+
+    const setLine = document.createElement('div');
+    setLine.className = 'line';
+
+    const setInput = document.createElement('input');
+    setInput.type = 'number';
+    setInput.inputMode = 'numeric';
+    setInput.placeholder = 'новий залишок';
+
+    const setBtn = createButton('Зберегти', 'primary', function() {
+      const value = Number(setInput.value);
+
+      if (isNaN(value) || value < 0) {
+        showError('Введи коректний новий залишок.');
+        return;
+      }
+
+      updateStock(product.id, 'set', value);
+      setInput.value = '';
+    });
+
+    setLine.appendChild(setInput);
+    setLine.appendChild(setBtn);
+    setBox.appendChild(setLabel);
+    setBox.appendChild(setLine);
+
+    actions.appendChild(addBox);
+    actions.appendChild(setBox);
+
+    card.appendChild(top);
+    card.appendChild(quick);
+    card.appendChild(actions);
 
     grid.appendChild(card);
   });
 }
 
-async function quickChange(productId, value) {
-  await updateStock(productId, 'add', value);
-}
-
-async function addStock(productId) {
-  const input = document.getElementById('add_' + productId);
-  const value = Number(input.value);
-
-  if (!value || value <= 0) {
-    showError('Введи кількість для поповнення.');
-    return;
-  }
-
-  await updateStock(productId, 'add', value);
-}
-
-async function setStock(productId) {
-  const input = document.getElementById('set_' + productId);
-  const value = Number(input.value);
-
-  if (isNaN(value) || value < 0) {
-    showError('Введи коректний новий залишок.');
-    return;
-  }
-
-  await updateStock(productId, 'set', value);
+function createButton(text, className, onClick) {
+  const button = document.createElement('button');
+  button.textContent = text;
+  button.className = className;
+  button.addEventListener('click', onClick);
+  return button;
 }
 
 async function updateStock(productId, mode, value) {
   try {
     hideMessages();
 
-    const result = await apiUpdateStock(productId, mode, value);
+    const response = await fetch('/.netlify/functions/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        action: 'updateStock',
+        pin: adminPin,
+        productId: productId,
+        mode: mode,
+        value: value
+      })
+    });
+
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error(data.error || 'Не вдалося оновити залишок.');
+    }
 
     showSuccess(
-      result.name + ': було ' + result.oldStock +
-      ', стало ' + result.newStock +
-      ' | зміна: ' + result.change
+      data.name +
+      ': було ' + data.oldStock +
+      ', стало ' + data.newStock +
+      ' | зміна: ' + data.change
     );
 
     await loadProducts();
   } catch (error) {
-    if (String(error.message || '').includes('PIN')) {
+    if (String(error.message || '').toLowerCase().includes('pin')) {
       localStorage.removeItem('admin_pin');
-      pin = '';
+      adminPin = '';
       document.getElementById('loginPanel').style.display = 'block';
       document.getElementById('adminPanel').style.display = 'none';
     }
 
-    showError(error.message || String(error));
+    showError('Помилка оновлення:\n' + (error.message || String(error)));
   }
 }
 
@@ -451,7 +371,6 @@ function normalizeImageUrl(url) {
   if (!raw) return '';
 
   if (raw.includes('drive.google.com/thumbnail')) return raw;
-
   if (raw.startsWith('https://lh3.googleusercontent.com/')) return raw;
 
   const matchFile = raw.match(/drive\.google\.com\/file\/d\/([^/]+)/);
@@ -474,8 +393,8 @@ function normalizeImageUrl(url) {
 }
 
 function showError(text) {
-  const errorBox = document.getElementById('error');
-  const successBox = document.getElementById('success');
+  const errorBox = document.getElementById('messageError');
+  const successBox = document.getElementById('messageSuccess');
 
   errorBox.textContent = text;
   errorBox.style.display = 'block';
@@ -483,8 +402,8 @@ function showError(text) {
 }
 
 function showSuccess(text) {
-  const successBox = document.getElementById('success');
-  const errorBox = document.getElementById('error');
+  const successBox = document.getElementById('messageSuccess');
+  const errorBox = document.getElementById('messageError');
 
   successBox.textContent = text;
   successBox.style.display = 'block';
@@ -492,24 +411,9 @@ function showSuccess(text) {
 }
 
 function hideMessages() {
-  document.getElementById('error').style.display = 'none';
-  document.getElementById('success').style.display = 'none';
+  document.getElementById('messageError').style.display = 'none';
+  document.getElementById('messageSuccess').style.display = 'none';
 }
-
-function escapeHtml(text) {
-  return String(text || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function escapeAttr(text) {
-  return escapeHtml(text);
-}
-
-init();
 </script>
 </body>
 </html>
