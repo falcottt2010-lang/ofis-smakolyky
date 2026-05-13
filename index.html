@@ -7,9 +7,7 @@
   <title>Смаколики в офісі</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -169,9 +167,7 @@
       align-items: center;
     }
 
-    .cartInfo {
-      flex: 1;
-    }
+    .cartInfo { flex: 1; }
 
     .total {
       color: #7b2cbf;
@@ -292,9 +288,7 @@
         gap: 10px;
       }
 
-      h1 {
-        font-size: 24px;
-      }
+      h1 { font-size: 24px; }
 
       .card {
         padding: 10px;
@@ -306,9 +300,7 @@
         align-items: stretch;
       }
 
-      .pay {
-        width: 100%;
-      }
+      .pay { width: 100%; }
     }
   </style>
 </head>
@@ -387,13 +379,8 @@
     async function apiConfirmManualPayment(items) {
       const response = await fetch('/.netlify/functions/api', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'confirmManualPayment',
-          items
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'confirmManualPayment', items })
       });
 
       const data = await response.json();
@@ -446,27 +433,75 @@
 
       products.forEach(function(p) {
         const q = cart[p.id] || 0;
-        const img = p.image
-          ? '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.name) + '">'
-          : '🥤';
-
         const disabled = p.stock <= 0;
 
         const card = document.createElement('div');
         card.className = 'card';
 
-        card.innerHTML =
-          '<div class="img">' + img + '</div>' +
-          '<div class="name">' + escapeHtml(p.name) + '</div>' +
-          '<div class="cat">' + escapeHtml(p.category) + '</div>' +
-          '<div class="price">' + p.price + ' грн</div>' +
-          '<div class="stock">Залишок: ' + p.stock + '</div>' +
-          '<div class="buttons">' +
-            '<button class="qtyBtn" onclick="changeQty(\\'' + p.id + '\\', -1)" ' + (q <= 0 ? 'disabled' : '') + '>−</button>' +
-            '<div class="qty">' + q + '</div>' +
-            '<button class="qtyBtn" onclick="changeQty(\\'' + p.id + '\\', 1)" ' + (disabled || q >= p.stock ? 'disabled' : '') + '>+</button>' +
-            '<button class="add" onclick="changeQty(\\'' + p.id + '\\', 1)" ' + (disabled || q >= p.stock ? 'disabled' : '') + '>' + (disabled ? 'Немає' : 'Додати') + '</button>' +
-          '</div>';
+        const imgBox = document.createElement('div');
+        imgBox.className = 'img';
+
+        if (p.image) {
+          const img = document.createElement('img');
+          img.src = p.image;
+          img.alt = p.name;
+          imgBox.appendChild(img);
+        } else {
+          imgBox.textContent = '🥤';
+        }
+
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = p.name;
+
+        const cat = document.createElement('div');
+        cat.className = 'cat';
+        cat.textContent = p.category || '';
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = p.price + ' грн';
+
+        const stock = document.createElement('div');
+        stock.className = 'stock';
+        stock.textContent = 'Залишок: ' + p.stock;
+
+        const buttons = document.createElement('div');
+        buttons.className = 'buttons';
+
+        const minus = document.createElement('button');
+        minus.className = 'qtyBtn';
+        minus.textContent = '−';
+        minus.disabled = q <= 0;
+        minus.onclick = function() { changeQty(p.id, -1); };
+
+        const qty = document.createElement('div');
+        qty.className = 'qty';
+        qty.textContent = q;
+
+        const plus = document.createElement('button');
+        plus.className = 'qtyBtn';
+        plus.textContent = '+';
+        plus.disabled = disabled || q >= p.stock;
+        plus.onclick = function() { changeQty(p.id, 1); };
+
+        const add = document.createElement('button');
+        add.className = 'add';
+        add.textContent = disabled ? 'Немає' : 'Додати';
+        add.disabled = disabled || q >= p.stock;
+        add.onclick = function() { changeQty(p.id, 1); };
+
+        buttons.appendChild(minus);
+        buttons.appendChild(qty);
+        buttons.appendChild(plus);
+        buttons.appendChild(add);
+
+        card.appendChild(imgBox);
+        card.appendChild(name);
+        card.appendChild(cat);
+        card.appendChild(price);
+        card.appendChild(stock);
+        card.appendChild(buttons);
 
         grid.appendChild(card);
       });
@@ -475,20 +510,14 @@
     }
 
     function changeQty(id, delta) {
-      const p = products.find(function(x) {
-        return x.id === id;
-      });
-
+      const p = products.find(function(x) { return x.id === id; });
       if (!p) return;
 
       const current = cart[id] || 0;
       const next = Math.max(0, Math.min(p.stock, current + delta));
 
-      if (next === 0) {
-        delete cart[id];
-      } else {
-        cart[id] = next;
-      }
+      if (next === 0) delete cart[id];
+      else cart[id] = next;
 
       render();
     }
@@ -496,10 +525,7 @@
     function getCartLines() {
       return Object.keys(cart)
         .map(function(id) {
-          const p = products.find(function(x) {
-            return x.id === id;
-          });
-
+          const p = products.find(function(x) { return x.id === id; });
           if (!p) return null;
 
           return {
@@ -581,10 +607,7 @@
       try {
         const result = await apiConfirmManualPayment(
           lines.map(function(x) {
-            return {
-              id: x.id,
-              qty: x.qty
-            };
+            return { id: x.id, qty: x.qty };
           })
         );
 
@@ -615,15 +638,6 @@
       const el = document.getElementById('error');
       el.textContent = '';
       el.style.display = 'none';
-    }
-
-    function escapeHtml(text) {
-      return String(text || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
     }
 
     loadShop();
